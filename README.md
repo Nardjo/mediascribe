@@ -2,6 +2,9 @@
 
 Extension Raycast pour transformer des vidéos, podcasts et articles en notes structurées.
 
+![Raycast Extension](https://img.shields.io/badge/Raycast-Extension-red?logo=raycast)
+![License MIT](https://img.shields.io/badge/License-MIT-blue)
+
 Mediascribe automatise le flux de travail : **transcription → analyse par Claude → export vers Obsidian ou Readwise Reader**.
 
 ## Fonctionnalités
