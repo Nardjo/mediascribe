@@ -1,0 +1,31 @@
+/// <reference types="@raycast/api">
+
+/* 🚧 🚧 🚧
+ * This file is auto-generated from the extension's manifest.
+ * Do not modify manually. Instead, update the `package.json` file.
+ * 🚧 🚧 🚧 */
+
+/* eslint-disable @typescript-eslint/ban-types */
+
+type ExtensionPreferences = {
+  /** Readwise Token - Token API Readwise Reader (laissez vide pour utiliser ~/.claude/mcp.json) */
+  "readwiseToken"?: string
+}
+
+/** Preferences accessible in all the extension's commands */
+declare type Preferences = ExtensionPreferences
+
+declare namespace Preferences {
+  /** Preferences accessible in the `transcribe` command */
+  export type Transcribe = ExtensionPreferences & {}
+  /** Preferences accessible in the `jobs` command */
+  export type Jobs = ExtensionPreferences & {}
+}
+
+declare namespace Arguments {
+  /** Arguments passed to the `transcribe` command */
+  export type Transcribe = {}
+  /** Arguments passed to the `jobs` command */
+  export type Jobs = {}
+}
+
