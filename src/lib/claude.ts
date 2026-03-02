@@ -1,4 +1,4 @@
-import { execa } from "execa";
+import { executeAICommand } from "./ai-provider.js";
 
 const SUMMARY_PROMPT = `Tu es un assistant qui résume des transcriptions de vidéos/podcasts.
 
@@ -11,10 +11,5 @@ Format ta réponse en markdown.`;
 
 export async function generateSummary(transcription: string): Promise<string> {
   const fullPrompt = `${SUMMARY_PROMPT}\n\nTranscription:\n${transcription}`;
-
-  const { stdout } = await execa("claude", ["--print", fullPrompt], {
-    timeout: 120000, // 2 minutes max
-  });
-
-  return stdout.trim();
+  return executeAICommand(fullPrompt);
 }

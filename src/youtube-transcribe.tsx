@@ -15,18 +15,15 @@ import { join } from "path";
 import { isValidYouTubeUrl, extractVideoId } from "./lib/youtube";
 import { getObsidianInboxPath } from "./lib/obsidian";
 import { createJob } from "./lib/jobs";
-import { OutputMode } from "./types";
 
 const SCRIPT_PATH = join(
   homedir(),
-  "Developer/PERSO/nexus/raycast-transcriber/scripts/transcribe-youtube.sh",
+  "Developer/nexus/mediascribe/scripts/transcribe-youtube.sh",
 );
 
 export function YouTubeTranscribe({
-  outputMode,
   onBack,
 }: {
-  outputMode: OutputMode;
   onBack: () => void;
 }) {
   const [url, setUrl] = useState("");
@@ -43,7 +40,8 @@ export function YouTubeTranscribe({
     const job = await createJob(`YouTube: ${videoId}`, url, "youtube");
 
     // Launch script with nohup to survive Raycast closing
-    const cmd = `nohup "${SCRIPT_PATH}" '${url}' '${job.id}' '${outputMode}' > /dev/null 2>&1 &`;
+    const logFile = `/tmp/mediascribe-${job.id}.log`;
+    const cmd = `nohup "${SCRIPT_PATH}" '${url}' '${job.id}' > "${logFile}" 2>&1 &`;
     exec(cmd);
 
     // Show HUD and close Raycast immediately

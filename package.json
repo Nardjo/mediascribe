@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "mediascribe",
-  "title": "Transcriber",
+  "title": "Mediascribe",
   "description": "Transcribe audio/video files from dwhelper or YouTube and save to Obsidian",
   "icon": "icon.png",
   "author": "jordanbastin",
@@ -10,7 +10,7 @@
   "commands": [
     {
       "name": "transcribe",
-      "title": "Transcribe Media",
+      "title": "Mediascribe",
       "description": "List and transcribe media files from dwhelper or YouTube",
       "mode": "view",
       "icon": "waveform"
@@ -23,15 +23,7 @@
       "icon": "list"
     }
   ],
-  "preferences": [
-    {
-      "name": "readwiseToken",
-      "title": "Readwise Token",
-      "description": "Token API Readwise Reader (laissez vide pour utiliser ~/.claude/mcp.json)",
-      "type": "password",
-      "required": false
-    }
-  ],
+  "preferences": [],
   "dependencies": {
     "@raycast/api": "^1.93.0",
     "execa": "^8.0.1"

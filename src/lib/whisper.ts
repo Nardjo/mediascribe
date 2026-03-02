@@ -7,7 +7,7 @@ const WHISPER_PATH = join(homedir(), ".local", "bin", "whisper");
 const WHISPER_MODEL = "medium";
 
 export async function transcribe(filePath: string): Promise<string> {
-  const outputDir = join(homedir(), ".cache", "raycast-transcriber");
+  const outputDir = join(homedir(), ".cache", "mediascribe");
 
   // Ensure output directory exists
   await mkdir(outputDir, { recursive: true });

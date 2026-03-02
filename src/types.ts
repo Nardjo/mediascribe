@@ -13,25 +13,12 @@ export interface TranscriptionResult {
   duration: number;
 }
 
-export type TranscriptionMode = "local" | "youtube" | "article";
-
-export type OutputMode = "concept" | "article" | "both";
+export type TranscriptionMode = "local" | "youtube";
 
 export interface YouTubeResult {
   title: string;
   outputPath: string;
   videoId: string;
-}
-
-export interface ReadwiseArticle {
-  id: string;
-  title: string;
-  url: string;
-  author?: string;
-  source?: string;
-  summary?: string;
-  created_at: string;
-  reading_progress: number;
 }
 
 export type JobStatus =
@@ -46,7 +33,7 @@ export interface TranscriptionJob {
   id: string;
   fileName: string;
   filePath: string;
-  source: "local" | "youtube" | "article";
+  source: "local" | "youtube";
   status: JobStatus;
   startTime: number;
   endTime?: number;

@@ -43,9 +43,13 @@ brew install lynx
 brew install jq
 ```
 
-### Claude CLI
+### Claude Code
 
-L'extension utilise [Claude Code](https://claude.ai/code) pour l'analyse. Le binaire `claude` doit être accessible dans `/opt/homebrew/bin/claude`.
+L'extension utilise Claude Code pour l'analyse des transcriptions :
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
 
 ## Installation
 

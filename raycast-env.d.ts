@@ -7,10 +7,7 @@
 
 /* eslint-disable @typescript-eslint/ban-types */
 
-type ExtensionPreferences = {
-  /** Readwise Token - Token API Readwise Reader (laissez vide pour utiliser ~/.claude/mcp.json) */
-  "readwiseToken"?: string
-}
+type ExtensionPreferences = {}
 
 /** Preferences accessible in all the extension's commands */
 declare type Preferences = ExtensionPreferences

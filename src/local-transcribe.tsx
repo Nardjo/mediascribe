@@ -19,7 +19,7 @@ import { join } from "path";
 import { readdir, stat, unlink } from "fs/promises";
 import { getObsidianInboxPath } from "./lib/obsidian";
 import { createJob } from "./lib/jobs";
-import { MediaFile, OutputMode } from "./types";
+import { MediaFile } from "./types";
 
 const DEFAULT_MEDIA_DIR = join(homedir(), "dwhelper");
 
@@ -34,7 +34,7 @@ const MEDIA_DIR = getMediaDir();
 const SUPPORTED_EXTENSIONS = [".mp3", ".mp4", ".webm", ".m4a", ".wav", ".ogg"];
 const SCRIPT_PATH = join(
   homedir(),
-  "Developer/PERSO/nexus/raycast-transcriber/scripts/transcribe-local.sh",
+  "Developer/nexus/mediascribe/scripts/transcribe-local.sh",
 );
 
 function formatFileSize(bytes: number): string {
@@ -73,10 +73,8 @@ async function loadMediaFiles(): Promise<MediaFile[]> {
 }
 
 export function LocalTranscribe({
-  outputMode,
   onBack,
 }: {
-  outputMode: OutputMode;
   onBack: () => void;
 }) {
   const [files, setFiles] = useState<MediaFile[]>([]);
@@ -95,7 +93,7 @@ export function LocalTranscribe({
 
     // Launch script with nohup (same pattern as YouTube which works)
     const escapedPath = file.path.replace(/'/g, "'\\''");
-    const cmd = `nohup "${SCRIPT_PATH}" '${escapedPath}' '${job.id}' '${outputMode}' > /dev/null 2>&1 &`;
+    const cmd = `nohup "${SCRIPT_PATH}" '${escapedPath}' '${job.id}' > /dev/null 2>&1 &`;
     exec(cmd);
 
     // Show HUD and close Raycast immediately
