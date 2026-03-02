@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Download YouTube video and transcribe with Whisper, then analyze with Claude CLI.
+Download YouTube video and transcribe with Whisper, then clean with Claude CLI.
 
-Usage: yt-transcribe <youtube_url> <mode>
+Usage: yt-transcribe <youtube_url>
 """
 
 import sys
@@ -31,9 +31,8 @@ def load_env():
 load_env()
 
 # Obsidian paths (configurable via .env)
-OBSIDIAN_VAULT = os.environ.get("OBSIDIAN_VAULT", os.path.expanduser("~/Documents/Obsidian"))
-OBSIDIAN_INBOX = os.environ.get("OBSIDIAN_INBOX", os.path.join(OBSIDIAN_VAULT, "0 INBOX"))
-TRANSCRIPTS_DIR = OBSIDIAN_INBOX
+OBSIDIAN_VAULT = os.path.expanduser(os.environ.get("OBSIDIAN_VAULT", "~/Documents/Obsidian"))
+OBSIDIAN_INBOX = os.path.expanduser(os.environ.get("OBSIDIAN_INBOX", os.path.join(OBSIDIAN_VAULT, "0 INBOX")))
 
 def get_video_id(url):
     """Extract video ID from YouTube URL."""
@@ -88,7 +87,6 @@ def transcribe_with_whisper(url):
                 break
 
         print("Transcribing with Whisper...")
-        # Use whisper CLI instead of Python import
         whisper_path = os.path.expanduser("~/.local/bin/whisper")
         result = subprocess.run([
             whisper_path, audio_path,
@@ -107,13 +105,13 @@ def transcribe_with_whisper(url):
         with open(txt_file, 'r') as f:
             return f.read().strip()
 
-def analyze_with_claude(transcript, mode):
-    """Analyze transcript with Claude CLI."""
-    print("Analyzing with Claude...")
+def clean_with_claude(transcript):
+    """Clean transcript with Claude CLI."""
+    print("Cleaning transcript with Claude...")
 
     try:
         result = subprocess.run(
-            ["python3", PROCESS_SCRIPT, mode],
+            ["python3", PROCESS_SCRIPT],
             input=transcript,
             capture_output=True,
             text=True,
@@ -134,12 +132,11 @@ def analyze_with_claude(transcript, mode):
         return None
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: yt-transcribe <youtube_url> <mode>")
+    if len(sys.argv) < 2:
+        print("Usage: yt-transcribe <youtube_url>")
         sys.exit(1)
 
     url = sys.argv[1]
-    mode = sys.argv[2]
 
     video_id = get_video_id(url)
     if not video_id:
@@ -155,110 +152,36 @@ def main():
     # Transcribe with Whisper
     transcript = transcribe_with_whisper(url)
 
-    # Analyze with Claude CLI
-    analysis = analyze_with_claude(transcript, mode)
+    # Clean with Claude CLI
+    cleaned = clean_with_claude(transcript)
 
     youtube_url = f"https://www.youtube.com/watch?v={video_id}"
-    date = datetime.now().strftime("%Y-%m-%d")
+    date_frontmatter = datetime.now().strftime("%d/%m/%Y")
+    date_file = datetime.now().strftime("%Y-%m-%d")
 
-    def save_to_readwise(article_analysis, video_title, video_url):
-        """Save article to Readwise Reader."""
-        tags = "transcription"
-        article_content = article_analysis if article_analysis else ""
+    # Save to Obsidian INBOX
+    os.makedirs(OBSIDIAN_INBOX, exist_ok=True)
 
-        if article_content:
-            lines = article_content.split('\n', 1)
-            if lines and lines[0].startswith("TAGS:"):
-                claude_tags = lines[0].replace("TAGS:", "").strip()
-                tags = f"transcription,{claude_tags},youtube"
-                article_content = lines[1] if len(lines) > 1 else ""
-            else:
-                tags = "transcription,youtube"
+    slug = slugify(title)
+    filename = f"{date_file}-{slug}.md"
+    output_path = os.path.join(OBSIDIAN_INBOX, filename)
 
-        # Convert markdown to simple HTML
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False) as f:
-            html_path = f.name
-            f.write("<html><body>\n")
-            for line in article_content.split('\n'):
-                if line.startswith('### '):
-                    f.write(f"<h3>{line[4:]}</h3>\n")
-                else:
-                    f.write(f"{line}\n")
-            f.write("</body></html>\n")
-
-        # Send to Readwise
-        send_script = os.path.join(SCRIPT_DIR, "send-to-readwise.sh")
-        result = subprocess.run([
-            send_script,
-            video_url,
-            video_title,
-            html_path,
-            tags
-        ], capture_output=True, text=True)
-
-        # Cleanup temp file
-        os.unlink(html_path)
-
-        return result.returncode == 0
-
-    def save_to_obsidian(concept_analysis, video_title, video_url, transcript_text, mode_label):
-        """Save concepts to Obsidian."""
-        os.makedirs(TRANSCRIPTS_DIR, exist_ok=True)
-
-        slug = slugify(video_title)
-        filename = f"{date}-{slug}.md"
-        output_path = os.path.join(TRANSCRIPTS_DIR, filename)
-
-        content = f"""---
+    content = f"""---
 MOC:
-Source: {video_url}
+Source: {youtube_url}
 Auteur:
-Date: {date}
-Mode: {mode_label}
+Date: {date_frontmatter}
 ---
 
-# {video_title}
+# {title}
 
-{concept_analysis if concept_analysis else "Analyse non disponible"}
-
----
-
-#### Transcription complète
-
-{transcript_text}
+{cleaned if cleaned else "Transcription non disponible"}
 """
 
-        with open(output_path, 'w') as f:
-            f.write(content)
+    with open(output_path, 'w') as f:
+        f.write(content)
 
-        return output_path
-
-    if mode == "article":
-        if save_to_readwise(analysis, title, youtube_url):
-            print(f"\nSaved to Readwise Reader: {title}")
-        else:
-            print("Error sending to Readwise")
-            sys.exit(1)
-    elif mode == "both":
-        # Generate both analyses
-        print("Generating concept analysis...")
-        concept_analysis = analyze_with_claude(transcript, "concept")
-        print("Generating article analysis...")
-        article_analysis = analyze_with_claude(transcript, "article")
-
-        # Save to Obsidian
-        output_path = save_to_obsidian(concept_analysis, title, youtube_url, transcript, "both")
-        print(f"\nSaved to Obsidian: {output_path}")
-
-        # Save to Readwise
-        if save_to_readwise(article_analysis, title, youtube_url):
-            print(f"Saved to Readwise Reader: {title}")
-        else:
-            print("Warning: Readwise save failed, but Obsidian succeeded")
-    else:
-        # Concept mode: save to Obsidian
-        output_path = save_to_obsidian(analysis, title, youtube_url, transcript, mode)
-        print(f"\nSaved to: {output_path}")
+    print(f"\nSaved to: {output_path}")
 
 if __name__ == "__main__":
     main()

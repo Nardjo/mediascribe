@@ -3,7 +3,7 @@ import { join } from "path";
 import { readFile, writeFile, mkdir } from "fs/promises";
 import { TranscriptionJob, JobStatus } from "../types";
 
-const CACHE_DIR = join(homedir(), ".cache", "raycast-transcriber");
+const CACHE_DIR = join(homedir(), ".cache", "mediascribe");
 const JOBS_FILE = join(CACHE_DIR, "jobs.json");
 
 async function ensureCacheDir() {
@@ -28,7 +28,7 @@ async function saveJobs(jobs: TranscriptionJob[]) {
 export async function createJob(
   fileName: string,
   filePath: string,
-  source: "local" | "youtube" | "article",
+  source: "local" | "youtube",
 ): Promise<TranscriptionJob> {
   const jobs = await loadJobs();
 

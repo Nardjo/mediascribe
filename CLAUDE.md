@@ -1,10 +1,10 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI agents when working with code in this repository.
 
 ## Project Overview
 
-**Mediascribe** is a Raycast extension for transcribing audio/video content and processing articles. It integrates with Claude for AI-powered summaries, Whisper for transcription, Obsidian for note storage, and Readwise Reader for article management.
+**Mediascribe** is a Raycast extension for transcribing audio/video content and processing articles. It integrates with Claude Code CLI for AI-powered summaries, Whisper for transcription, Obsidian for note storage, and Readwise Reader for article management.
 
 ## Commands
 
@@ -34,9 +34,9 @@ User Input → Raycast UI → Job Created → Shell Script (async)
                                             ↓
                                   Whisper/yt-dlp/lynx
                                             ↓
-                              Claude CLI → Summary
+                                   Claude Code CLI → Summary
                                             ↓
-                              Obsidian/Readwise → Output
+                               Obsidian/Readwise → Output
 ```
 
 ### Key Files
@@ -45,7 +45,8 @@ User Input → Raycast UI → Job Created → Shell Script (async)
 |------|---------|
 | `src/transcribe.tsx` | Main entry point - mode selection |
 | `src/lib/jobs.ts` | Job persistence (`~/.cache/raycast-transcriber/jobs.json`) |
-| `src/lib/claude.ts` | Claude CLI wrapper for summaries |
+| `src/lib/ai-provider.ts` | AI provider (Claude Code) |
+| `src/lib/claude.ts` | AI wrapper for summaries |
 | `src/lib/whisper.ts` | Whisper transcription wrapper |
 | `scripts/transcribe-*.sh` | Transcription orchestrators |
 | `scripts/process-*.py` | Python processing scripts |
@@ -60,7 +61,7 @@ User Input → Raycast UI → Job Created → Shell Script (async)
 
 These must be installed separately:
 - `~/.local/bin/whisper` - OpenAI Whisper
-- `/opt/homebrew/bin/claude` - Claude CLI
+- `claude` - Claude Code CLI
 - `yt-dlp` - YouTube video downloading
 - `lynx` - HTML text extraction
 - `jq` - JSON parsing

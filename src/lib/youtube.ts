@@ -30,7 +30,7 @@ export function extractVideoId(url: string): string | null {
 export async function transcribeYouTube(url: string): Promise<string> {
   const scriptPath = join(
     homedir(),
-    "Developer/PERSO/nexus/raycast-transcriber/scripts/yt-transcribe",
+    "Developer/nexus/mediascribe/scripts/yt-transcribe",
   );
 
   const { stdout } = await execa(scriptPath, [url]);
